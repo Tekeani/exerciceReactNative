@@ -1,26 +1,24 @@
 import React from 'react';
-import { View, Text, Button, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity } from 'react-native';
 
-export default function Tache({ texte, index, onSupprimer }) {
+export default function Tache({ texte, onSupprimer }) {
   return (
-    <View style={styles.tache}>
-      <Text style={styles.texte}>{texte}</Text>
-      <Button title="Supprimer" color="red" onPress={() => onSupprimer(index)} />
+    <View
+      style={{
+        flexDirection: 'row',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        backgroundColor: '#f2f2f2',
+        marginVertical: 5,
+        padding: 10,
+        borderRadius: 8,
+      }}
+    >
+      <Text style={{ fontSize: 16 }}>{texte}</Text>
+      <TouchableOpacity onPress={onSupprimer}>
+        <Text style={{ color: 'red', fontWeight: 'bold' }}>Supprimer</Text>
+      </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  tache: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    padding: 10,
-    marginBottom: 8,
-    backgroundColor: '#f5f5f5',
-    borderRadius: 5,
-  },
-  texte: {
-    fontSize: 16,
-  },
-});

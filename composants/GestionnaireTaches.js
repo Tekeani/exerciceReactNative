@@ -1,33 +1,62 @@
-import React, { useState } from 'react';
-import { View, StyleSheet } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import SaisieTache from './SaisieTache';
 import ListeTaches from './ListeTaches';
 
 export default function GestionnaireTaches() {
-  const [listeTaches, setListeTaches] = useState([]);
+  const [taches, setTaches] = useState([]);
+
+  useEffect(() => {
+    const chargerTaches = async () => {
+      try {
+        const tachesSauvegardees = await AsyncStorage.getItem('taches');
+        if (tachesSauvegardees !== null) {
+          setTaches(JSON.parse(tachesSauvegardees));
+        }
+      } catch (erreur) {
+        console.log('Erreur de chargement :', erreur);
+      }
+    };
+    chargerTaches();
+  }, []);
+
+  useEffect(() => {
+    const sauvegarderTaches = async () => {
+      try {
+        await AsyncStorage.setItem('taches', JSON.stringify(taches));
+      } catch (erreur) {
+        console.log('Erreur de sauvegarde :', erreur);
+      }
+    };
+    sauvegarderTaches();
+  }, [taches]);
+
+
 
   const ajouterTache = (nouvelleTache) => {
     if (nouvelleTache.trim() === '') return;
-    setListeTaches([...listeTaches, nouvelleTache]);
+
+    const nouvelle = {
+      id: Date.now().toString(),
+      texte: nouvelleTache
+    };
+
+    setTaches([...taches, nouvelle]);
   };
 
-  const supprimerTache = (indexTache) => {
-    const nouvelleListe = listeTaches.filter((_, i) => i !== indexTache);
-    setListeTaches(nouvelleListe);
+  const supprimerTache = (idTache) => {
+    setTaches(taches.filter((tache) => tache.id !== idTache));
   };
 
   return (
-    <View style={styles.zone}>
+    <View style={{ padding: 20 }}>
       <SaisieTache onAjouter={ajouterTache} />
-      <ListeTaches taches={listeTaches} onSupprimer={supprimerTache} />
+      <ListeTaches taches={taches} onSupprimer={supprimerTache} />
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  zone: {
-    flex: 1,
-  },
-});
+
 
 
